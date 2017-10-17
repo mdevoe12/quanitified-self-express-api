@@ -6,9 +6,14 @@ describe('Server', function() {
 
   before(function(done) {
     this.port = 9876;
+
     this.server = app.listen(this.port, function(err, result) {
       if (err) { return done(err); }
       done();
+    });
+
+    this.request = request.defaults({
+      baseUrl: 'http://localhost:9876/'
     });
   });
 
@@ -20,12 +25,18 @@ describe('Server', function() {
     assert(app);
   })
 
-  describe('GET /api/v1/foods', function() {
-    it('should return a 200', function(done) {
-      request.get('http://localhost:9876', function(error, response) {
-        if (error) { done(error); }
-        assert.equal(response.statusCode, 200);
-        done();
+
+  describe('GET /api/v1/foods/:id', function() {
+    beforeEach(function() {
+      app.locals.secrets = {
+        wowowow: 'I am a banana'
+      }
+    })
+    it('should return a 404 if the resource is not found', function(done) {
+      this.request.get('/api/v1/foods/bahaha', function(error, response) {
+        if (error) { done(error) }
+        assert.equal(response.statusCode, 404)
+        done()
       })
     })
   })
