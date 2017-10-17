@@ -21,6 +21,10 @@ app.get('/api/v1/foods/:id', function(request, response) {
   response.json({ id, message })
 })
 
+app.post('/api/secrets', function(request, response) {
+  response.status(201).end()
+})
+
 if (!module.parent) {
   app.listen(3000, function() {
     console.log(`${app.locals.title} is running on port 3000.`)

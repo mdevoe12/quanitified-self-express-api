@@ -40,4 +40,17 @@ describe('Server', function() {
       })
     })
   })
+
+  describe('POST /api/v1/foods', function() {
+    beforeEach(function() {
+      app.locals.secrets = {}
+    })
+    it('should not return 404', function(done) {
+      this.request.post('/api/v1/foods', function(error, response) {
+        if(error) { done(error) }
+        assert.notEqual(response.statusCode, 404)
+        done()
+      })
+    })
+  })
 })
