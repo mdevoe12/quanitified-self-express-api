@@ -1,16 +1,25 @@
 var express = require('express')
 var app = express()
-
-app.locals.secrets = {
-  wowowow: "I am a banana"
-}
+var bodyParser = require('body-parser')
+const environment = process.env.NODE_ENV || 'development'
+const configuration = require('./knexfile')[environment]
+const database = require('knex')(configuration)
 
 app.set('port', process.env.PORT || 3000)
 app.locals.title = "Quantified Self Express API"
 
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+
+
 app.get('/api/v1/foods', function(request, response) {
-  response.send('Endpoint for api/v1/foods')
+  database.raw('SELECT * FROM foods')
+  .then(function(data){
+    if (data.rowCount == 0) { return response.sendStatus(404) }
+    response.json(data.rows)
+  })
 })
+
 
 app.get('/api/v1/foods/:id', function(request, response) {
   var id = request.params.id
