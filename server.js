@@ -11,7 +11,7 @@ app.locals.title = "Quantified Self Express API"
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-
+// GET Foods
 app.get('/api/v1/foods', function(request, response) {
   database.raw('SELECT * FROM foods')
   .then(function(data){
@@ -20,14 +20,17 @@ app.get('/api/v1/foods', function(request, response) {
   })
 })
 
-
+// GET specific food by id
 app.get('/api/v1/foods/:id', function(request, response) {
   var id = request.params.id
-  var message = app.locals.secrets[id]
+  // console.log(id)
+  // debugger
+  database.raw("SELECT * FROM foods WHERE id=?", [id])
+  .then(function(data){
+    if (data.rowCount == 0) { return response.sendStatus(404) }
 
-  if (!message) { return response.sendStatus(404) }
-
-  response.json({ id, message })
+    response.json(data.rows[0])
+  })
 })
 
 app.post('/api/secrets', function(request, response) {
