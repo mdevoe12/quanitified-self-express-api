@@ -22,9 +22,7 @@ app.get('/api/v1/foods', function(request, response) {
 
 // GET specific food by id
 app.get('/api/v1/foods/:id', function(request, response) {
-  var id = request.params.id
-  // console.log(id)
-  // debugger
+  let id = request.params.id
   database.raw("SELECT * FROM foods WHERE id=?", [id])
   .then(function(data){
     if (data.rowCount == 0) { return response.sendStatus(404) }
@@ -33,8 +31,17 @@ app.get('/api/v1/foods/:id', function(request, response) {
   })
 })
 
-app.post('/api/secrets', function(request, response) {
-  response.status(201).end()
+// POST new food
+app.post('/api/v1/foods', function(request, response) {
+  let name = request.param('name')
+  let calories = request.param('calories')
+
+  database.raw('INSERT INTO foods (name, calories, created_at, updated_at) VALUES (?, ?, ?, ?)',
+  [name, calories, new Date, new Date]
+  )
+  .then(function(data){
+    response.status(201).json(data.rows[0])
+  })
 })
 
 if (!module.parent) {
