@@ -44,6 +44,30 @@ app.post('/api/v1/foods', function(request, response) {
   })
 })
 
+// PATCH for food with id
+
+app.patch('/api/v1/foods/:id', function(request, response) {
+  let id = request.params.id
+  let name = request.param('name')
+  let calories = request.param('calories')
+
+  database.raw('UPDATE foods SET name = ?, calories = ?, updated_at = ? WHERE id = ?',
+  [name, calories, new Date, id]
+)
+  .then(function(data){
+    response.json(data.rows[0])
+  })
+})
+
+app.delete('/api/v1/foods/:id', function(request, response) {
+  let id = request.params.id
+
+  database.raw('DELETE FROM foods WHERE id = ?', [id])
+  .then(function(){
+    response.status(200)
+  })
+})
+
 if (!module.parent) {
   app.listen(3000, function() {
     console.log(`${app.locals.title} is running on port 3000.`)
