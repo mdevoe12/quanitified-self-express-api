@@ -11,6 +11,7 @@ app.locals.title = "Quantified Self Express API"
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "POST, PATCH, GET, DELETE, OPTIONS")
   next();
 });
 
@@ -54,8 +55,8 @@ app.post('/api/v1/foods', function(request, response, next) {
 // PATCH for food with id
 app.patch('/api/v1/foods/:id', function(request, response, next) {
   let id = request.params.id
-  let name = request.param('name')
-  let calories = request.param('calories')
+  let name = request.body['food']['name']
+  let calories = request.body['food']['calories']
 
   database.raw('UPDATE foods SET name = ?, calories = ?, updated_at = ? WHERE id = ?',
   [name, calories, new Date, id]
