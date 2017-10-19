@@ -77,7 +77,6 @@ app.delete('/api/v1/foods/:id', function(request, response, next) {
 })
 
 // GET all meals
-let mealsArray = []
 app.get('/api/v1/meals', function(request, response, next) {
   database.raw("select meals.*, json_agg(foods.*) AS foods from ((meals inner join meal_foods on meals.id = meal_foods.meal_id) inner join foods on meal_foods.food_id = foods.id) GROUP BY meals.id")
   .then(function(data){
@@ -86,6 +85,16 @@ app.get('/api/v1/meals', function(request, response, next) {
   })
 })
 
+//GET Specific meal
+app.get('/api/v1/meals/:id/foods', function(request, response, next) {
+  let id = request.params.id
+  database.raw("select meals.*, json_agg(foods.*) AS foods from ((meals inner join meal_foods on meals.id = meal_foods.meal_id) inner join foods on meal_foods.food_id = foods.id) WHERE meals.id = ? GROUP BY meals.id",
+  [id])
+  .then(function(data){
+    response.json(data.rows)
+    console.log(data.row)
+  })
+})
 
 if (!module.parent) {
   app.listen(3000, function() {
