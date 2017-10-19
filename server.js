@@ -8,11 +8,18 @@ const database = require('knex')(configuration)
 app.set('port', process.env.PORT || 3000)
 app.locals.title = "Quantified Self Express API"
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 // GET Foods
-app.get('/api/v1/foods', function(request, response) {
+app.get('/api/v1/foods', function(request, response, next) {
   database.raw('SELECT * FROM foods')
   .then(function(data){
     if (data.rowCount == 0) { return response.sendStatus(404) }
@@ -21,7 +28,7 @@ app.get('/api/v1/foods', function(request, response) {
 })
 
 // GET specific food by id
-app.get('/api/v1/foods/:id', function(request, response) {
+app.get('/api/v1/foods/:id', function(request, response, next) {
   let id = request.params.id
   database.raw("SELECT * FROM foods WHERE id=?", [id])
   .then(function(data){
@@ -32,7 +39,7 @@ app.get('/api/v1/foods/:id', function(request, response) {
 })
 
 // POST new food
-app.post('/api/v1/foods', function(request, response) {
+app.post('/api/v1/foods', function(request, response, next) {
   let name = request.param('name')
   let calories = request.param('calories')
 
@@ -45,7 +52,7 @@ app.post('/api/v1/foods', function(request, response) {
 })
 
 // PATCH for food with id
-app.patch('/api/v1/foods/:id', function(request, response) {
+app.patch('/api/v1/foods/:id', function(request, response, next) {
   let id = request.params.id
   let name = request.param('name')
   let calories = request.param('calories')
@@ -59,7 +66,7 @@ app.patch('/api/v1/foods/:id', function(request, response) {
 })
 
 // DELETE specific food
-app.delete('/api/v1/foods/:id', function(request, response) {
+app.delete('/api/v1/foods/:id', function(request, response, next) {
   let id = request.params.id
 
   database.raw('DELETE FROM foods WHERE id = ?', [id])
