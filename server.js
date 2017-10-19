@@ -40,13 +40,13 @@ app.get('/api/v1/foods/:id', function(request, response, next) {
 
 // POST new food
 app.post('/api/v1/foods', function(request, response, next) {
-  let name = request.param('name')
-  let calories = request.param('calories')
-
+  let name = request.body['food']['name']
+  let calories = request.body['food']['calories']
   database.raw('INSERT INTO foods (name, calories, created_at, updated_at) VALUES (?, ?, ?, ?)',
   [name, calories, new Date, new Date]
   )
   .then(function(data){
+    console.log(data)
     response.status(201).json(data.rows[0])
   })
 })
