@@ -45,7 +45,6 @@ app.post('/api/v1/foods', function(request, response) {
 })
 
 // PATCH for food with id
-
 app.patch('/api/v1/foods/:id', function(request, response) {
   let id = request.params.id
   let name = request.param('name')
@@ -59,6 +58,7 @@ app.patch('/api/v1/foods/:id', function(request, response) {
   })
 })
 
+// DELETE specific food
 app.delete('/api/v1/foods/:id', function(request, response) {
   let id = request.params.id
 
