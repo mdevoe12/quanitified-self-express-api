@@ -107,6 +107,17 @@ app.post('/api/v1/meals/:meal_id/foods/:id', function(request, response, next) {
   })
 })
 
+// DELETE food from meal
+app.delete('/api/v1/meals/:meal_id/foods/:id', function(request, response, next) {
+  let meal_id = request.params.meal_id
+  let food_id = request.params.id
+  database.raw('DELETE FROM meal_foods where food_id = ? AND meal_id = ?',
+  [food_id, meal_id])
+  .then(function(){
+    response.status(200)
+  })
+})
+
 if (!module.parent) {
   app.listen(3000, function() {
     console.log(`${app.locals.title} is running on port 3000.`)
