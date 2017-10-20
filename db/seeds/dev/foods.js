@@ -31,7 +31,7 @@ exports.seed = function(knex, Promise) {
       ),
       knex.raw(
         'INSERT INTO meals (name, created_at, updated_at) VALUES (?, ?, ?)',
-        ["Snacks", new Date, new Date]
+        ["Snack", new Date, new Date]
       ),
       randNum = function() {return randArray[Math.floor(Math.random() * randArray.length)]},
       knex.raw('INSERT INTO meal_foods (food_id, meal_id) VALUES (?, ?)',

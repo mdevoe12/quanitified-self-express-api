@@ -43,11 +43,10 @@ app.get('/api/v1/foods/:id', function(request, response, next) {
 app.post('/api/v1/foods', function(request, response, next) {
   let name = request.body['food']['name']
   let calories = request.body['food']['calories']
-  database.raw('INSERT INTO foods (name, calories, created_at, updated_at) VALUES (?, ?, ?, ?)',
+  database.raw('INSERT INTO foods (name, calories, created_at, updated_at) VALUES (?, ?, ?, ?) RETURNING id, name, calories',
   [name, calories, new Date, new Date]
   )
   .then(function(data){
-    console.log(data)
     response.status(201).json(data.rows[0])
   })
 })
@@ -62,7 +61,7 @@ app.patch('/api/v1/foods/:id', function(request, response, next) {
   [name, calories, new Date, id]
 )
   .then(function(data){
-    response.json(data.rows[0])
+    response.status(204).json(data.rows[0])
   })
 })
 
@@ -72,7 +71,7 @@ app.delete('/api/v1/foods/:id', function(request, response, next) {
 
   database.raw('DELETE FROM foods WHERE id = ?', [id])
   .then(function(){
-    response.status(200)
+    response.status(204).json(id)
   })
 })
 
@@ -80,8 +79,7 @@ app.delete('/api/v1/foods/:id', function(request, response, next) {
 app.get('/api/v1/meals', function(request, response, next) {
   database.raw("select meals.*, json_agg(foods.*) AS foods from ((meals inner join meal_foods on meals.id = meal_foods.meal_id) inner join foods on meal_foods.food_id = foods.id) GROUP BY meals.id")
   .then(function(data){
-  response.json(data.rows)
-  console.log(data.rows)
+  response.status(200).json(data.rows)
   })
 })
 
@@ -91,8 +89,7 @@ app.get('/api/v1/meals/:id/foods', function(request, response, next) {
   database.raw("select meals.*, json_agg(foods.*) AS foods from ((meals inner join meal_foods on meals.id = meal_foods.meal_id) inner join foods on meal_foods.food_id = foods.id) WHERE meals.id = ? GROUP BY meals.id",
   [id])
   .then(function(data){
-    response.json(data.rows)
-    console.log(data.row)
+    response.status(200).json(data.rows)
   })
 })
 
@@ -100,10 +97,11 @@ app.get('/api/v1/meals/:id/foods', function(request, response, next) {
 app.post('/api/v1/meals/:meal_id/foods/:id', function(request, response, next) {
   let meal_id = request.params.meal_id
   let food_id = request.params.id
-  database.raw('INSERT INTO meal_foods (meal_id, food_id) VALUES (?, ?)',
+  database.raw('INSERT INTO meal_foods (meal_id, food_id) VALUES (?, ?) RETURNING id, meal_id, food_id',
   [meal_id, food_id])
   .then(function(data){
-    response.json(data.rows[0])
+    console.log(data.rows);
+    response.status(201).json(data.rows[0])
   })
 })
 
@@ -114,7 +112,7 @@ app.delete('/api/v1/meals/:meal_id/foods/:id', function(request, response, next)
   database.raw('DELETE FROM meal_foods where food_id = ? AND meal_id = ?',
   [food_id, meal_id])
   .then(function(){
-    response.status(200)
+    response.status(204).json(meal_id)
   })
 })
 
