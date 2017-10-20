@@ -96,6 +96,17 @@ app.get('/api/v1/meals/:id/foods', function(request, response, next) {
   })
 })
 
+// POST Food to Meal
+app.post('/api/v1/meals/:meal_id/foods/:id', function(request, response, next) {
+  let meal_id = request.params.meal_id
+  let food_id = request.params.id
+  database.raw('INSERT INTO meal_foods (meal_id, food_id) VALUES (?, ?)',
+  [meal_id, food_id])
+  .then(function(data){
+    response.json(data.rows[0])
+  })
+})
+
 if (!module.parent) {
   app.listen(3000, function() {
     console.log(`${app.locals.title} is running on port 3000.`)
