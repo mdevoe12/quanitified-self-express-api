@@ -76,6 +76,48 @@ app.delete('/api/v1/foods/:id', function(request, response, next) {
   })
 })
 
+// GET all meals
+app.get('/api/v1/meals', function(request, response, next) {
+  database.raw("select meals.*, json_agg(foods.*) AS foods from ((meals inner join meal_foods on meals.id = meal_foods.meal_id) inner join foods on meal_foods.food_id = foods.id) GROUP BY meals.id")
+  .then(function(data){
+  response.json(data.rows)
+  console.log(data.rows)
+  })
+})
+
+//GET Specific meal
+app.get('/api/v1/meals/:id/foods', function(request, response, next) {
+  let id = request.params.id
+  database.raw("select meals.*, json_agg(foods.*) AS foods from ((meals inner join meal_foods on meals.id = meal_foods.meal_id) inner join foods on meal_foods.food_id = foods.id) WHERE meals.id = ? GROUP BY meals.id",
+  [id])
+  .then(function(data){
+    response.json(data.rows)
+    console.log(data.row)
+  })
+})
+
+// POST Food to Meal
+app.post('/api/v1/meals/:meal_id/foods/:id', function(request, response, next) {
+  let meal_id = request.params.meal_id
+  let food_id = request.params.id
+  database.raw('INSERT INTO meal_foods (meal_id, food_id) VALUES (?, ?)',
+  [meal_id, food_id])
+  .then(function(data){
+    response.json(data.rows[0])
+  })
+})
+
+// DELETE food from meal
+app.delete('/api/v1/meals/:meal_id/foods/:id', function(request, response, next) {
+  let meal_id = request.params.meal_id
+  let food_id = request.params.id
+  database.raw('DELETE FROM meal_foods where food_id = ? AND meal_id = ?',
+  [food_id, meal_id])
+  .then(function(){
+    response.status(200)
+  })
+})
+
 if (!module.parent) {
   app.listen(3000, function() {
     console.log(`${app.locals.title} is running on port 3000.`)
