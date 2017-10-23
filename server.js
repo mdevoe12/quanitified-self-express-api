@@ -117,7 +117,7 @@ app.delete('/api/v1/meals/:meal_id/foods/:id', function(request, response, next)
 })
 
 if (!module.parent) {
-  app.listen(3000, function() {
+  app.listen(process.env.PORT || 3000, function() {
     console.log(`${app.locals.title} is running on port 3000.`)
   })
 }
