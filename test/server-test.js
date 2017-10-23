@@ -27,13 +27,9 @@ describe('Server', function() {
 
 
   describe('GET /api/v1/foods/:id', function() {
-    beforeEach(function() {
-      app.locals.secrets = {
-        wowowow: 'I am a banana'
-      }
-    })
+    
     it('should return a 404 if the resource is not found', function(done) {
-      this.request.get('/api/v1/foods/bahaha', function(error, response) {
+      this.request.get('/api/v1/foods/100000', function(error, response) {
         if (error) { done(error) }
         assert.equal(response.statusCode, 404)
         done()
