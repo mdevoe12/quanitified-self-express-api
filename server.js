@@ -26,7 +26,7 @@ app.get('/api/v1/foods', Foods.index)
 // GET specific food by id
 app.get('/api/v1/foods/:id', function(request, response, next) {
   let id = request.params.id
-  database.raw("SELECT * FROM foods WHERE id=?", [id])
+  Food.find(id)
   .then(function(data){
     if (data.rowCount == 0) { return response.sendStatus(404) }
 
