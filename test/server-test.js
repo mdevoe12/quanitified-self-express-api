@@ -31,9 +31,11 @@ describe('Server', function() {
 
   describe('GET /api/v1/foods', function() {
     beforeEach(function(done) {
-      database.raw('INSERT INTO foods (name, calories, created_at, updated_at) VALUES (?, ?, ?, ?) RETURNING id, name, calories',
-      ['Banana', 200, new Date, new Date]
-    ).then(function() { done() })
+      Promise.all([
+        Food.create('Banana', 200),
+        Food.create('Honey', 300)
+      ])
+      .then(function() { done() })
     })
 
     afterEach(function(done) {
@@ -49,7 +51,7 @@ describe('Server', function() {
         let calories = 200
 
         let foods = JSON.parse(response.body)
-        assert.equal(foods.length, 1)
+        assert.equal(foods.length, 2)
         assert.equal(foods[0].name, 'Banana')
         assert.equal(foods[0].calories, 200)
         done()
@@ -59,11 +61,47 @@ describe('Server', function() {
 
 
   describe('GET /api/v1/foods/:id', function() {
+    beforeEach(function(done) {
+      Food.create('Banana', 200)
+      .then(function() {return Food.create('Honey', 300)})
+      .then(function() { done() })
+    })
+
+    afterEach(function(done) {
+      Food.destroyAll()
+      .then(function() { done() })
+    })
 
     it('should return a 404 if the resource is not found', function(done) {
       this.request.get('/api/v1/foods/100000', function(error, response) {
         if (error) { done(error) }
         assert.equal(response.statusCode, 404)
+        done()
+      })
+    })
+
+    it('returns a specific food', function(done) {
+      this.request.get('/api/v1/foods/1', function(error, response) {
+        if (error) { done(error) }
+
+        let food = JSON.parse(response.body)
+
+        assert.equal(food.id, 1)
+        assert.equal(food.name, 'Banana')
+        assert.equal(food.calories, 200)
+        done()
+      })
+    })
+
+    it('returns another specific food', function(done) {
+      this.request.get('/api/v1/foods/2', function(error, response) {
+        if (error) { done(error) }
+
+        let food = JSON.parse(response.body)
+
+        assert.equal(food.id, 2)
+        assert.equal(food.name, 'Honey')
+        assert.equal(food.calories, 300)
         done()
       })
     })
