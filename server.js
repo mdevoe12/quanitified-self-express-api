@@ -1,6 +1,8 @@
-var express = require('express')
-var app = express()
-var bodyParser = require('body-parser')
+const express = require('express')
+const app = express()
+const bodyParser = require('body-parser')
+const Food = require('./lib/models/food')
+const Foods = require('./lib/controllers/foods')
 const environment = process.env.NODE_ENV || 'development'
 const configuration = require('./knexfile')[environment]
 const database = require('knex')(configuration)
@@ -15,29 +17,14 @@ app.use(function(req, res, next) {
   next();
 });
 
-
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 // GET Foods
-app.get('/api/v1/foods', function(request, response, next) {
-  database.raw('SELECT * FROM foods')
-  .then(function(data){
-    if (data.rowCount == 0) { return response.sendStatus(404) }
-    response.json(data.rows)
-  })
-})
+app.get('/api/v1/foods', Foods.index)
 
 // GET specific food by id
-app.get('/api/v1/foods/:id', function(request, response, next) {
-  let id = request.params.id
-  database.raw("SELECT * FROM foods WHERE id=?", [id])
-  .then(function(data){
-    if (data.rowCount == 0) { return response.sendStatus(404) }
-
-    response.json(data.rows[0])
-  })
-})
+app.get('/api/v1/foods/:id', Foods.show)
 
 // POST new food
 app.post('/api/v1/foods', function(request, response, next) {
