@@ -108,9 +108,11 @@ describe('Server', function() {
   })
 
   describe('POST /api/v1/foods', function() {
-    beforeEach(function() {
-      app.locals.secrets = {}
+    afterEach(function(done) {
+      Food.destroyAll()
+      .then(function() { done() })
     })
+
     it('should not return 404', function(done) {
       this.request.post('/api/v1/foods', function(error, response) {
         if(error) { done(error) }
