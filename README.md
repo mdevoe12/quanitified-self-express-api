@@ -44,18 +44,29 @@ $: npm start
 The following endpoints are provided for consumption:
 
 Food Endpoints:
+
 GET /api/v1/foods - returns a JSON of all foods
+
 GET /api/v1/foods/:id - returns a single food item matching the given ID
+
 POST /api/v1/foods - create a new food using the following syntax:
+
 { food: { name: "Name of food here", calories: "Calories here"} }
+
 PATCH /api/v1/foods/:id - update a single food item matching the given ID, use the following syntax:
+
 { food: { name: "Name of food here", calories: "Calories here"} }
+
 DELETE /api/v1/foods/:id - will delete the food with the id passed in.
 
 Meal Endpoints:
+
 GET /api/v1/meals - returns all meals with foods assigned to those meals.
+
 GET /api/v1/meals/:meal_id/foods - returns the foods associated with the meal ID given.
+
 POST /api/v1/meals/:meal_id/foods/:id - adds a new food to the specified meal.
+
 DELETE /api/v1/meals/:meal_id/foods/:id - removes the selected food from the specified meal
 
 
